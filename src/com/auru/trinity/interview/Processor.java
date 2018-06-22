@@ -22,20 +22,18 @@ public class Processor {
         this.filePath = filePath;
     }
 
-    public Stream<Word> readFile() {
-        Stream<Word> words = null;
-        try {
-            words = Files.lines(Paths.get(filePath)).map(s -> new Word(s));
-        } catch (IOException e) {
-            System.out.println("Can't read file by path: " + filePath);
-        }
+    public Stream<Word> readFile() throws IOException {
+        Stream<Word> words = Files.lines(Paths.get(filePath)).map(s -> new Word(s));
 
         return words;
     }
 
 
-    public CurrentWordsAndSimpleWordsCollections findSimpleWords(Stream<Word> words) {
+    public CurrentWordsAndSimpleWordsCollections findSimpleWords(Stream<Word> words) throws NoDataProvidedException {
         CopyOnWriteArrayList<Word> wordsList = new CopyOnWriteArrayList<>(words.collect(Collectors.toList()));
+        if (wordsList == null || wordsList.size() == 0) {
+            throw new NoDataProvidedException();
+        }
         //TODO why row below works slower???
 //        List<Word> wordsList = words.collect(Collectors.toList());
         Set<String> simpleWords = new HashSet<>();
