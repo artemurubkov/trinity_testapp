@@ -1,6 +1,7 @@
 package com.auru.trinity.interview;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.stream.Stream;
 
 public class Main {
@@ -25,6 +26,8 @@ public class Main {
 
         long t1 = System.currentTimeMillis();
         System.out.println("Simple words count: " + subResult.getSimpleWords().size() + ", time: " + (t1 - t));
+
+//        subResult.getSimpleWords().stream().sorted().forEach(System.out::println);
 
         Statistics stats = s.countLongestWords(subResult);
 

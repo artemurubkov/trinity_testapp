@@ -2,7 +2,7 @@ package com.auru.trinity.interview;
 
 import java.util.ArrayList;
 
-public class Word {
+public class Word implements Comparable<Word> {
 
     public static final String REPLACE_MATCHES_TO = " ";
 
@@ -22,6 +22,16 @@ public class Word {
         wordAfterTrim = w.getWordAfterTrim();
         simpleWordsCount = w.getSimpleWordsCount();
         consistsOfSimpleWordsList = new ArrayList<>(w.getConsistsOfSimpleWordsList());
+    }
+
+    @Override
+    public int compareTo(Word o) {
+        if (wordAfterTrim.length() > o.getWordAfterTrim().length()) {
+            return 1;
+        } else if (wordAfterTrim.length() < o.getWordAfterTrim().length()) {
+            return -1;
+        }
+        return 0;
     }
 
     public String getInitialWord() {

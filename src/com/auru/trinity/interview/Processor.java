@@ -3,10 +3,7 @@ package com.auru.trinity.interview;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,10 +27,11 @@ public class Processor {
 
 
     public CurrentWordsAndSimpleWordsCollections findSimpleWords(Stream<Word> words) throws NoDataProvidedException {
-        CopyOnWriteArrayList<Word> wordsList = new CopyOnWriteArrayList<>(words.collect(Collectors.toList()));
+        ArrayList<Word> wordsList = new ArrayList<>(words.collect(Collectors.toList()));
         if (wordsList == null || wordsList.size() == 0) {
             throw new NoDataProvidedException();
         }
+        Collections.sort(wordsList);
         //TODO why row below works slower???
 //        List<Word> wordsList = words.collect(Collectors.toList());
         Set<String> simpleWords = new HashSet<>();
@@ -44,23 +42,36 @@ public class Processor {
             int length = curr.getCurrentLength();
             boolean isSimple = true;
 
-//            for (int k = 0; k < 200; k++) {
-            for (int k = 0; k < wordsList.size(); k++) {
-                Word s = wordsList.get(k);
-                if (/*s == null || */curr == s || s.getCurrentLength() > length) {
-                    continue;
-                }
-                if (curr.startsWith(s.getInitialWord()) || curr.contains(s.getInitialWord())) {
-//                    curr.excludeMatch(s.getInitialWord());
+            Iterator<String> it = simpleWords.iterator();
+            while (it.hasNext()) {
+                String simpleEl = it.next();
+                if (curr.contains(simpleEl)) {
+//                    curr.excludeMatch(simpleEl);
                     isSimple = false;
                     break;
+                }
+            }
+
+//            for (int k = 0; k < 200; k++) {
+            if (isSimple) {
+                for (int k = i /*all previous simple elements are stored in simpleWords*/; k < wordsList.size(); k++) {
+                    Word s = wordsList.get(k);
+                    if (s.getCurrentLength() >= length) {
+                        break;
+                    }
+                    if (curr == s) {
+                        continue;
+                    }
+                    if (curr.contains(s.getInitialWord())) {
+//                        curr.excludeMatch(s.getInitialWord());
+                        isSimple = false;
+                        break;
+                    }
                 }
             }
             if (isSimple) {
                 simpleWords.add(curr.getInitialWord());
 //                System.out.println(curr.getInitialWord());
-                wordsList.remove(curr);
-//                wordsList.set(i, null);
             }
         }
 
@@ -82,9 +93,6 @@ public class Processor {
 //        for (int i = 0; i < 200; i++) {
         for (int i = 0; i < words.size(); i++) {
             Word curr = words.get(i);
-//            if(curr == null){
-//                continue;
-//            }
             Iterator<String> it = simpleWords.iterator();
             while (it.hasNext()) {
                 String s = it.next();
